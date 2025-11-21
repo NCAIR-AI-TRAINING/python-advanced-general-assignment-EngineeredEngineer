@@ -41,6 +41,7 @@ jobs:
           comparison-method: exact
           command: 'bash -c "grep ''test_duplicate_visitor_error'' results.xml | grep -vq ''<failure'' && echo passed || echo failed"'
           timeout: 10
+          max-score: 25
 
       - name: Parse Test 2
         id: t2
@@ -51,6 +52,7 @@ jobs:
           comparison-method: exact
           command: 'bash -c "grep ''test_file_is_created_if_missing'' results.xml | grep -vq ''<failure'' && echo passed || echo failed"'
           timeout: 10
+          max-score: 25
 
       - name: Parse Test 3
         id: t3
@@ -61,6 +63,7 @@ jobs:
           comparison-method: exact
           command: 'bash -c "grep ''test_timestamp_is_added'' results.xml | grep -vq ''<failure'' && echo passed || echo failed"'
           timeout: 10
+          max-score: 25
 
       - name: Parse Test 4
         id: t4
@@ -71,6 +74,7 @@ jobs:
           comparison-method: exact
           command: 'bash -c "grep ''test_wait_time_enforced'' results.xml | grep -vq ''<failure'' && echo passed || echo failed"'
           timeout: 10
+          max-score: 25
 
       # --------------- REPORT RESULTS TO CLASSROOM -----------------
 
@@ -94,5 +98,10 @@ jobs:
 
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          T1_RESULTS: "${{ steps.t1.outputs.result }}"
+          T2_RESULTS: "${{ steps.t2.outputs.result }}"
+          T3_RESULTS: "${{ steps.t3.outputs.result }}"
+          T4_RESULTS: "${{ steps.t4.outputs.result }}"
         with:
           runners: t1,t2,t3,t4
