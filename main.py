@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 
 class DuplicateVisitorError(Exception):
@@ -32,14 +32,20 @@ def get_last_visitor():
     return name, datetime.fromisoformat(timestamp)
 
 def add_visitor(visitor_name):
-    last_name, _ = get_last_visitor()
+    last_name, last_time = get_last_visitor()
+    now = datetime.now()
 
-    # ONLY duplicate rule
+    # Duplicate rule
     if last_name == visitor_name:
         raise DuplicateVisitorError("Duplicate visitor detected")
 
+    # 5-minute rule
+    if last_time is not None:
+        if now - last_time < timedelta(minutes=5):
+            raise EarlyEntryError("Visitor must wait 5 minutes")
+
     with open(FILENAME, "a") as f:
-        f.write(f"{visitor_name} | {datetime.now().isoformat()}\n")
+        f.write(f"{visitor_name} | {now.isoformat()}\n")
 
 def main():
     ensure_file()
