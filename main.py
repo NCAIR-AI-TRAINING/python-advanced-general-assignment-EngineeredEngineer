@@ -10,13 +10,36 @@ class EarlyEntryError(Exception):
 FILENAME = "visitors.txt"
 
 def ensure_file():
-    pass
+    if not os.path.exists(FILENAME):
+        with open(FILENAME, "w") as f:
+            pass
 
 def get_last_visitor():
-    pass
+    if not os.path.exists(FILENAME):
+        return None, None
+
+    with open(FILENAME) as f:
+        lines = f.readlines()
+
+    if not lines:
+        return None, None
+
+    last_line = lines[-1].strip()
+    if " | " not in last_line:
+        return None, None
+
+    name, timestamp = last_line.split(" | ")
+    return name, datetime.fromisoformat(timestamp)
 
 def add_visitor(visitor_name):
-    pass
+    last_name, _ = get_last_visitor()
+
+    # ONLY duplicate rule
+    if last_name == visitor_name:
+        raise DuplicateVisitorError("Duplicate visitor detected")
+
+    with open(FILENAME, "a") as f:
+        f.write(f"{visitor_name} | {datetime.now().isoformat()}\n")
 
 def main():
     ensure_file()
